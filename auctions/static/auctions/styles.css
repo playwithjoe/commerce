@@ -1,0 +1,14 @@
+body {
+    padding: 10px;
+}
+
+.img-listing {
+    width: 100px;
+    height: 100px;
+    object-fit: scale-down;
+}
+
+.img-full {
+    max-width: 400px;
+    max-height: 150px;
+}
