@@ -18,7 +18,7 @@ class Listing(models.Model):
     title = models.CharField(max_length=32, default="title")
     picture = models.CharField(max_length=128, default="picture")
     description = models.CharField(max_length=256, default="No description")
-    bid = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    bid = models.DecimalField(max_digits=10, decimal_places=2, default=1.00)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="owner", default=1)
     category = models.CharField(max_length=32, choices=CATEGORY_CHOICES, default="Home")
     watchlist = models.ManyToManyField(User, blank=True, related_name="watchlist")
@@ -29,12 +29,11 @@ class Listing(models.Model):
 class Auction(models.Model):
     active = models.BooleanField(default=True)
     listing = models.OneToOneField(Listing, on_delete=models.CASCADE, primary_key=True)
-    bid = models.DecimalField(max_digits=10, decimal_places=2)
     creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name="creator", default=1)
     winner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="winner", default=1)
 
     def __str__(self):
-        return f"{self.winner} is currently winning {self.listing} for a bid of ${self.bid}"
+        return f"{self.winner} is currently winning {self.listing}"
 
 class Comments(models.Model):
     message = models.TextField(max_length=256)

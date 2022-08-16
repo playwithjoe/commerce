@@ -4,22 +4,16 @@
     <div class="container">
         <h2>Categories</h2>
         
-        {% for listing in listings %}
+        {% for choice in categories %}
   
-            <div class="card" style="width: 20rem;">
-                <img class="card-img-top pt-3" src="{{ listing.picture }}">
-                    <div class="card-body">
-                        <h4 class="card-title">{{ listing.title }}</h4>
-                        <p class="card-text">{{ listing.description }}</p>
+        <div>
+            <h4>
+                <a href="{% url 'category' choice.0 %}">{{ choice.1 }}</a>
+            </h4>
+        </div>    
+        
 
-                    </div>
-                    <div class="card-body">
-                        <a href="{% url 'listings' listing.id %}" class="btn btn-primary pr-3">Make an Offer</a>
-                        <span class="float-right pt-1">${{ listing.bid }}</span>
-                    </div>
-            </div>
-
-    {% endfor %}
+        {% endfor %}
         
     </div>
 

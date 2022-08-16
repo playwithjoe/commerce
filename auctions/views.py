@@ -16,20 +16,22 @@ def new(request):
     if request.method == "POST":
         
         # Form data collected
-        new_form = ListingForm(request.POST)
+        new = ListingForm(request.POST)
 
         # Check if form is valid
-        if new_form.is_valid():
+        if new.is_valid():    
+            
+            # Save new Listing with inputted form data
+            new_listing = new.save()
 
-            # Save new listing
-            listing = new_form.save()
-
-            Auction.objects.create(listing=listing, bid=listing.bid)
+            # Create a new Auction with the new listing
+            new_auction = Auction(listing=new_listing, winner=request.user, creator=request.user)
+            new_auction.save()
 
         return HttpResponseRedirect(reverse('index'))
     else:
         return render(request, "auctions/new.html", {
-            "form": ListingForm()
+            "form": ListingForm(initial={'owner': request.user})
         })
 
 
@@ -45,19 +47,29 @@ def listings(request, listing_id):
             })
 
 @login_required
-def categories(request, CATEGORY_CHOICES):
-    
-    
+def categories(request):
 
+    # Takes the CATEGORY_CHOICES from the Model to display for user to choose which categories to look at
     return render(request, "auctions/categories.html", {
-        "category": CATEGORY_CHOICES,
+        "categories": CATEGORY_CHOICES
+    })
 
+@login_required
+def category(request, category):
+
+    # Finds all listings that match the category chosen from categories.html
+    cat_listings = Listing.objects.all().filter(category=category)
+
+    return render(request, "auctions/category.html", {
+        "cat_listings": cat_listings
     })
 
 @login_required
 def index(request):
 
-    # Find all Listings filtered by the owner 
+    # Find all Listings that are active
+    # listings = Listing.objects.filter().select_related('auction')
+
     listings = Listing.objects.all()
 
     return render(request, "auctions/index.html", {
@@ -91,8 +103,41 @@ def add_watchlist(request, listing_id):
 
         return HttpResponseRedirect(reverse('watchlist'))
 
-def bid(request, listing):
-    pass
+@login_required
+def bid(request, listing_id):
+    
+    if request.method == "POST":
+
+        # Get listing_id and the bid from user
+        listing_id = request.POST["listing_id"]
+        bid = float(request.POST["bid"])
+
+        # Look up listing from listing_id
+        item = Listing.objects.get(id=listing_id)
+
+        # Server side check if new bid is larger 
+        # Note: Don't like saving both models seperately 
+        if bid > item.bid:
+            item.bid = bid
+            item.save()
+            item.auction.winner = request.user
+            item.auction.save()
+
+        else:
+            return HttpResponseRedirect(reverse('listings', args=[listing_id]))
+
+        return HttpResponseRedirect(reverse('index'))
+
+def close(request, listing_id):
+
+    if request.method == "POST":
+
+        auction = Auction.objects.get(listing=listing_id)
+
+        auction.active = "False"
+        auction.save()
+
+        return render(request, "auctions/index.html")
 
 def login_view(request):
     if request.method == "POST":
