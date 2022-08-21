@@ -1,12 +1,14 @@
+from email import message
+from msilib.schema import InstallUISequence
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse
 
 from auctions.forms import ListingForm
-from .models import CATEGORY_CHOICES, User, Listing, Auction
+from .models import *
 
 
 @login_required
@@ -19,14 +21,13 @@ def new(request):
         new = ListingForm(request.POST)
 
         # Check if form is valid
-        if new.is_valid():    
+        if new.is_valid():   
             
             # Save new Listing with inputted form data
-            new_listing = new.save()
+            new.save()
 
-            # Create a new Auction with the new listing
-            new_auction = Auction(listing=new_listing, winner=request.user, creator=request.user)
-            new_auction.save()
+            auction = Bid()
+            auction.save()
 
         return HttpResponseRedirect(reverse('index'))
     else:
@@ -67,9 +68,6 @@ def category(request, category):
 @login_required
 def index(request):
 
-    # Find all Listings that are active
-    # listings = Listing.objects.filter().select_related('auction')
-
     listings = Listing.objects.all()
 
     return render(request, "auctions/index.html", {
@@ -104,7 +102,7 @@ def add_watchlist(request, listing_id):
         return HttpResponseRedirect(reverse('watchlist'))
 
 @login_required
-def bid(request, listing_id):
+def bid(request):
     
     if request.method == "POST":
 
@@ -113,32 +111,38 @@ def bid(request, listing_id):
         bid = float(request.POST["bid"])
 
         # Look up listing from listing_id
-        item = Listing.objects.get(id=listing_id)
+        item = Listing.objects.get(listing=listing_id)
 
-        # Server side check if new bid is larger 
-        # Note: Don't like saving both models seperately 
-        if bid > item.bid:
-            item.bid = bid
-            item.save()
-            item.auction.winner = request.user
-            item.auction.save()
+        print(item.Bid.time)
 
+        if bid <= item.price:
+            return render(request, "auctions/listings.html", {
+                "listing": item,
+                "bid": bid,
+                "message": "Invalid bid, must be larger than current price"                
+            })
         else:
-            return HttpResponseRedirect(reverse('listings', args=[listing_id]))
+            item.auction = bid
+            item.winner = request.user
+            item.save()
 
+        
         return HttpResponseRedirect(reverse('index'))
 
-def close(request, listing_id):
+@login_required
+def close(request):
 
     if request.method == "POST":
 
-        auction = Auction.objects.get(listing=listing_id)
+        listing_id = request.POST["listing_id"]
+        listing = Listing.objects.get(id=listing_id)
 
-        auction.active = "False"
-        auction.save()
+        if listing.owner == request.user:
+            
+            pass
 
-        return render(request, "auctions/index.html")
-
+        return HttpResponseRedirect(reverse('index'))
+    
 def login_view(request):
     if request.method == "POST":
 

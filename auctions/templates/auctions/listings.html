@@ -5,7 +5,9 @@
     Auctions: {{listing.title}}
 {% endblock %}
 {% block body %}
-    
+    {% if message %}
+    <div>{{ message }}</div>
+    {% endif %}
     <div class="container">
         <img src="{{ listing.picture }}" class="img-full">
         <p>
@@ -20,24 +22,19 @@
         </p>
 
         <p>
-            {% if user.is_authenticated %}
             <form action="{% url 'bid' %}" method="post">
                 {% csrf_token %}
-                    <input type="number" name="bid" id="bid_number" min="{{ listing.bid }}" value="{{ listing.bid }}">
-                    <input type="hidden" name="listing_id" id="bid_button" value="{{ listing.id }}">
-                    <input type="submit" class="btn btn-success" value="Bid">
-
-                {% if listing.owner == user %}
-                <div class="form-group">
-                    <form action="{% url 'close' %}" method="post">
-                        {% csrf_token %}
-                        <input type="submit" class="btn btn-danger" value="Close Auction">
-                        <input type="hidden" name="listing_id" id="close_button" value="{{listing.id}}">
-                    </form>
-                </div> 
-                {% endif %}
-
+                <input type="number" name="bid" id="bid_number" min="{{ listing.price }}" value="{{ listing.price }}">
+                <input type="hidden" name="listing_id" id="bid_button" value="{{ listing.id }}">
+                <input type="submit" class="btn btn-success" value="Bid">
             </form>
+            {% if listing.owner == user %}
+            <form action="{% url 'close' %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="listing_id" id="close_button" value="{{ listing.id }}">
+                <input type="submit" class="btn btn-danger" value="Close Auction">
+            </form>  
+            {% endif %}
             <form action="{% url 'add_watchlist' %}" method="post">
                 <div class="form-group">
                     {% csrf_token %}
@@ -49,7 +46,6 @@
                     {% endif %}
                 </div>
             </form>
-            {% endif %}
         </p>
     </div>
 {% endblock %}

@@ -9,7 +9,10 @@ class ListingForm(ModelForm):
         fields = '__all__'
         widgets = {
             'owner': forms.HiddenInput(),
-            'watchlist': forms.HiddenInput()
+            'winner': forms.HiddenInput(),
+            'watchlist': forms.HiddenInput(),
+            "active": forms.HiddenInput(),
+            "picture": forms.TextInput(attrs={"placeholder": "Copy link to picture of listing eg. (https://www.website.com/my_picture.jpeg"})
         }
     def __init__(self, *args, **kwargs):
         super(ListingForm, self).__init__(*args, **kwargs)
@@ -17,3 +20,4 @@ class ListingForm(ModelForm):
             self.fields[field].widget.attrs.update({
                 "class": "form-control"
             })
+        
