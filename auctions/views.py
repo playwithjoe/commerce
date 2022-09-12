@@ -1,5 +1,4 @@
 from email import message
-from msilib.schema import InstallUISequence
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
@@ -25,9 +24,6 @@ def new(request):
             
             # Save new Listing with inputted form data
             new.save()
-
-            auction = Bid()
-            auction.save()
 
         return HttpResponseRedirect(reverse('index'))
     else:
@@ -111,20 +107,22 @@ def bid(request):
         bid = float(request.POST["bid"])
 
         # Look up listing from listing_id
-        item = Listing.objects.get(listing=listing_id)
+        listing = Listing.objects.get(id=listing_id)
 
-        print(item.Bid.time)
-
-        if bid <= item.price:
+        # Make sure bid is valid
+        if bid <= listing.price:
             return render(request, "auctions/listings.html", {
-                "listing": item,
+                "listing": listing,
                 "bid": bid,
                 "message": "Invalid bid, must be larger than current price"                
             })
         else:
-            item.auction = bid
-            item.winner = request.user
-            item.save()
+            new_bid = Bid(bid=bid, auction=listing, bidder=request.user)
+            new_bid.save()
+
+            listing.price = bid
+            listing.winner = request.user
+            listing.save()
 
         
         return HttpResponseRedirect(reverse('index'))
@@ -138,8 +136,8 @@ def close(request):
         listing = Listing.objects.get(id=listing_id)
 
         if listing.owner == request.user:
-            
-            pass
+            listing.active = False
+            listing.save()
 
         return HttpResponseRedirect(reverse('index'))
     

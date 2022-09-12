@@ -4,7 +4,9 @@
     <div class="container">
         <h2>Active Listings</h2>
 
+
         {% for listing in listings %}
+            {% if listing.active %}
   
             <div class="card" style="width: 20rem;">
                 <img class="card-img-top pt-3" src="{{ listing.picture }}">
@@ -18,8 +20,9 @@
                         <span class="float-right pt-1">${{ listing.price }}</span>
                     </div>
             </div>
+            {% endif %}
+        {% endfor %}
 
-    {% endfor %}
         
     </div>
 

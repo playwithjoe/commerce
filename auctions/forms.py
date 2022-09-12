@@ -12,7 +12,7 @@ class ListingForm(ModelForm):
             'winner': forms.HiddenInput(),
             'watchlist': forms.HiddenInput(),
             "active": forms.HiddenInput(),
-            "picture": forms.TextInput(attrs={"placeholder": "Copy link to picture of listing eg. (https://www.website.com/my_picture.jpeg"})
+            "picture": forms.TextInput(attrs={"placeholder": "Copy link to picture of listing eg. (https://www.website.com/my_picture.jpeggit"})
         }
     def __init__(self, *args, **kwargs):
         super(ListingForm, self).__init__(*args, **kwargs)
