@@ -12,3 +12,8 @@ body {
     max-width: 400px;
     max-height: 150px;
 }
+
+.card-img-top {
+    height: 15vw;
+    object-fit: contain;
+}

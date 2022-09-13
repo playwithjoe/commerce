@@ -64,7 +64,7 @@ def category(request, category):
 @login_required
 def index(request):
 
-    listings = Listing.objects.all()
+    listings = Listing.objects.all().order_by('title')
 
     return render(request, "auctions/index.html", {
         "listings": listings
@@ -140,6 +140,13 @@ def close(request):
             listing.save()
 
         return HttpResponseRedirect(reverse('index'))
+
+@login_required
+def add_comment(request):
+
+    #TODO
+
+    pass
     
 def login_view(request):
     if request.method == "POST":
