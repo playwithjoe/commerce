@@ -33,7 +33,7 @@ class Bid(models.Model):
     bid = models.DecimalField(max_digits=10, decimal_places=2, default=1.00)
     auction = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name="bids")
     bidder = models.ForeignKey(User, on_delete=models.CASCADE, related_name="bids", default="0")
-    time = models.DateTimeField(auto_now=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.bid} made by {self.bidder} on {self.auction.title}"
@@ -42,6 +42,7 @@ class Comments(models.Model):
     message = models.TextField(max_length=256)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="comments")
     listing = models.ForeignKey(Listing, null=True, on_delete=models.CASCADE, related_name="comments")
-        
+    timestamp = models.DateTimeField(auto_now_add=True)
+
     def __str__(self):
         return f"{self.user} commented: {self.message}"

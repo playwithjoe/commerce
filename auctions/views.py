@@ -144,9 +144,18 @@ def close(request):
 @login_required
 def add_comment(request):
 
-    #TODO
+    if request.method == "POST":
 
-    pass
+        listing_id = request.POST["listing_id"]
+        listing = Listing.objects.get(id=listing_id)
+
+        pass
+
+    #TODO finish comments
+
+        
+
+    
     
 def login_view(request):
     if request.method == "POST":
