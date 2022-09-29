@@ -9,7 +9,6 @@ from django.urls import reverse
 from auctions.forms import ListingForm
 from .models import *
 
-
 @login_required
 def new(request):
 
@@ -37,10 +36,12 @@ def listings(request, listing_id):
 
     listing = Listing.objects.get(id=listing_id)
     user = request.user
+    comments = Comments.objects.all().filter(listing=listing)
 
     return render(request, "auctions/listings.html", {
         "listing": listing,
         "user": user,
+        "comments": comments,
             })
 
 @login_required
@@ -147,16 +148,20 @@ def add_comment(request):
     if request.method == "POST":
 
         listing_id = request.POST["listing_id"]
+        text = request.POST["comment_field"]
         listing = Listing.objects.get(id=listing_id)
-
-        pass
-
-    #TODO finish comments
 
         
 
+        new_comment = Comments(message=text, user=request.user, listing=listing)
+
+        new_comment.save()
+
+        return HttpResponseRedirect(reverse("index"))
     
-    
+    else:
+        return 
+
 def login_view(request):
     if request.method == "POST":
 
