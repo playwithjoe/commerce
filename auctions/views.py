@@ -151,16 +151,14 @@ def add_comment(request):
         text = request.POST["comment_field"]
         listing = Listing.objects.get(id=listing_id)
 
-        
-
         new_comment = Comments(message=text, user=request.user, listing=listing)
 
         new_comment.save()
 
-        return HttpResponseRedirect(reverse("index"))
+        return HttpResponseRedirect(f"listings/{listing_id}")
     
     else:
-        return 
+        return render(request, "auctions/index.html")
 
 def login_view(request):
     if request.method == "POST":

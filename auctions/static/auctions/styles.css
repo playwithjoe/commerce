@@ -17,3 +17,13 @@ body {
     height: 15vw;
     object-fit: contain;
 }
+
+.comment-box {
+    border-style: solid;
+    border-width: medium;
+    background-color: blanchedalmond;
+}
+
+.comment-text {
+    background-color: white;
+}

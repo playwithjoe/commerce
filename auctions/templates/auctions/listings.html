@@ -59,9 +59,11 @@
         <div class="listing-comments">
             <h4>Comments</h4>
             {% for comment in comments %}
-                <div class="comment-text">
-                    <span class="comment-time">{{ comment.timestamp }} </span>
-                    {{ comment.user }} wrote: {{ comment.message }}
+                <div class="comment-box pt-2 mt-1">
+                    {{ comment.user }}
+                    <span class="comment-time">{{ comment.timestamp }}</span>
+                    <br>
+                    <span class="comment-text">{{ comment.message }}</span>
                 </div>
             {% endfor %}
         </div>
