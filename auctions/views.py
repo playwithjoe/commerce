@@ -34,8 +34,13 @@ def new(request):
 @login_required
 def listings(request, listing_id):
 
+    # find listing from id in model Listing
     listing = Listing.objects.get(id=listing_id)
+
+    # current user
     user = request.user
+
+    # to show comments on the listing
     comments = Comments.objects.all().filter(listing=listing)
 
     return render(request, "auctions/listings.html", {
@@ -65,6 +70,7 @@ def category(request, category):
 @login_required
 def index(request):
 
+    # lookup all listings
     listings = Listing.objects.all().order_by('title')
 
     return render(request, "auctions/index.html", {
@@ -118,9 +124,12 @@ def bid(request):
                 "message": "Invalid bid, must be larger than current price"                
             })
         else:
+
+            # Create and save a new Bid 
             new_bid = Bid(bid=bid, auction=listing, bidder=request.user)
             new_bid.save()
 
+            # Update the listing price on the auction with new valid bid
             listing.price = bid
             listing.winner = request.user
             listing.save()
@@ -133,9 +142,12 @@ def close(request):
 
     if request.method == "POST":
 
+        # Find listing to close
         listing_id = request.POST["listing_id"]
         listing = Listing.objects.get(id=listing_id)
 
+        # If the user is the owner of the listing can close
+        # Template also only shows "Close" button to owner
         if listing.owner == request.user:
             listing.active = False
             listing.save()
@@ -147,18 +159,27 @@ def add_comment(request):
 
     if request.method == "POST":
 
+        # Capture listing_id and text input, lookup listing
         listing_id = request.POST["listing_id"]
         text = request.POST["comment_field"]
         listing = Listing.objects.get(id=listing_id)
 
+        # Create Comments object and save
         new_comment = Comments(message=text, user=request.user, listing=listing)
-
         new_comment.save()
 
         return HttpResponseRedirect(f"listings/{listing_id}")
     
     else:
         return render(request, "auctions/index.html")
+
+def winners(request):
+
+    # Displays all auctions won by user
+    list_winners = Listing.objects.all().filter(winner=request.user, active=False)
+    return render(request, "auctions/winners.html", {
+        "list_winners": list_winners
+    })
 
 def login_view(request):
     if request.method == "POST":

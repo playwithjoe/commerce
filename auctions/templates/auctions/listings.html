@@ -9,6 +9,9 @@
     <div>{{ message }}</div>
     {% endif %}
     <div class="container">
+        {% if not listing.active and user == listing.winner %}
+        <h3 style="color: red">Winner!</h3>
+        {% endif %}
         <img src="{{ listing.picture }}" class="img-full">
         <p>
             <h3>{{ listing.title }}</h3>
@@ -60,10 +63,12 @@
             <h4>Comments</h4>
             {% for comment in comments %}
                 <div class="comment-box pt-2 mt-1">
-                    {{ comment.user }}
-                    <span class="comment-time">{{ comment.timestamp }}</span>
-                    <br>
-                    <span class="comment-text">{{ comment.message }}</span>
+                    <div class="ml-3">
+                        <strong>{{ comment.user }}</strong>
+                        <span class="comment-time">{{ comment.timestamp }}</span>
+                        <br class="comment-text-bg">
+                        <span class="comment-text">{{ comment.message }}</span>
+                    </div>                  
                 </div>
             {% endfor %}
         </div>

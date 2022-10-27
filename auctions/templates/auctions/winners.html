@@ -1,0 +1,14 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <div class="container">
+        <h2>Winners</h2>
+        
+        {% for item in list_winners %}
+  
+        <h4>
+            <a href="{% url 'listings' item.id %}">{{ item.title }}</a>
+        </h4>
+
+        {% endfor %}
+{% endblock %}
